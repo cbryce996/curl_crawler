@@ -22,14 +22,10 @@ void pool::initialize_pool()
 				while (!stopped)
 				{
 					std::unique_lock<std::mutex> lock(tasks_mutex);
-					if (!tasks_queue.empty())
-					{
-						tasks_semaphore.acquire();
-						std::unique_ptr<task> current_task;
-						current_task = std::move(tasks_queue.front());
-						tasks_queue.pop();
-						current_task->run();	
-					}
+					tasks_semaphore.acquire();
+					std::unique_ptr<task> current_task;
+					current_task = std::move(tasks_queue.read());
+					current_task->run();	
 				}
 			}));
 	}

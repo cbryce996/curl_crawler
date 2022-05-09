@@ -4,13 +4,14 @@
 #include <mutex>
 #include <semaphore>
 #include "task.h"
+#include "bounded_buffer.h"
 
 class pool
 {
 private:
-	const int THREADS;
+	const int THREADS = 8;
 	bool stopped = false;
-	std::queue<std::unique_ptr<task>> tasks_queue;
+	bounded_buffer<std::unique_ptr<task>> tasks_queue;
 	std::mutex tasks_mutex;
 	std::vector<std::thread> threads_vector;
 	std::counting_semaphore<0> tasks_semaphore;
