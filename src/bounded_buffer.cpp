@@ -1,16 +1,20 @@
 #include "bounded_buffer.h"
 
-template <typename T>
-void bounded_buffer<T>::push(T element)
+bounded_buffer::bounded_buffer() :
+	buffer_queue(),
+	buffer_semaphore(100)
+{
+}
+
+void bounded_buffer::push(std::unique_ptr<task> element)
 {
 	buffer_semaphore.acquire();	
 	buffer_queue.push(std::move(element));
 }
 
-template <typename T>
-T bounded_buffer<T>::read()
+std::unique_ptr<task> bounded_buffer::read()
 {
-	std::unique_ptr<T> element = buffer_queue.front();
+	std::unique_ptr<task> element = std::move(buffer_queue.front());
 	buffer_queue.pop();
 	buffer_semaphore.release();
 	return std::move(element);

@@ -1,20 +1,22 @@
+#pragma once
 #include <queue>
 #include <vector>
 #include <thread>
 #include <mutex>
 #include <semaphore>
+#include <iostream>
 #include "task.h"
 #include "bounded_buffer.h"
 
 class pool
 {
 private:
-	const int THREADS = 8;
-	bool stopped = false;
-	bounded_buffer<std::unique_ptr<task>> tasks_queue;
+	const int THREADS;
+	bool stopped;
+	std::queue<std::unique_ptr<task>> tasks_queue;
 	std::mutex tasks_mutex;
 	std::vector<std::thread> threads_vector;
-	std::counting_semaphore<0> tasks_semaphore;
+	std::counting_semaphore<1> tasks_semaphore;
 
 public:
 	pool();
