@@ -1,12 +1,12 @@
 #include "pool.h"
 
-pool::pool() :
-	THREADS(8),
+pool::pool(std::size_t number_threads, std::size_t buffer_size) :
+	threads(number_threads),
 	stopped(false),
-	tasks_queue(),
+	tasks_queue(buffer_size),
 	tasks_mutex(),
 	threads_vector(),
-	tasks_semaphore(100)
+	tasks_semaphore(0)
 {
 }
 
@@ -18,7 +18,6 @@ pool::~pool()
 
 void pool::schedule_task(std::unique_ptr<task> new_task)
 {
-	std::unique_lock<std::mutex> lock(tasks_mutex);
 	tasks_queue.push(std::move(new_task));
 	tasks_semaphore.release();
 	std::cout << "Task added to queue" << std::endl;
@@ -26,22 +25,20 @@ void pool::schedule_task(std::unique_ptr<task> new_task)
 
 void pool::initialize_pool()
 {
-	for (int i = 0; i < THREADS; i++)
+	for (int i = 0; i < threads; i++)
 	{
 		threads_vector.push_back(std::thread([&]()
 			{
 				while (!stopped)
 				{
-					std::unique_lock<std::mutex> lock(tasks_mutex);
-					if (!tasks_queue.empty())
+					tasks_semaphore.acquire();
+					std::unique_ptr<task> current_task;
 					{
-						tasks_semaphore.acquire();
-						std::unique_ptr<task> current_task;
-						current_task = std::move(tasks_queue.front());
-						tasks_queue.pop();
-						current_task->run();	
-						std::cout << "Task executed" << std::endl;
+						std::unique_lock<std::mutex> lock(tasks_mutex);
+						current_task = std::move(tasks_queue.read());
 					}
+					current_task->run();	
+					std::cout << "Task executed" << std::endl;
 				}
 			}));
 		std::cout << "Thread created" << std::endl;

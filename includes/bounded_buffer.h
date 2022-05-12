@@ -9,10 +9,10 @@ class bounded_buffer
 {
 private:
 	std::queue<std::unique_ptr<task>> buffer_queue;
-	std::counting_semaphore<1> buffer_semaphore;
+	std::counting_semaphore<0> buffer_semaphore;
 
 public:
-	bounded_buffer();
+	bounded_buffer(std::size_t);
 
 	void push(std::unique_ptr<task>);
 	std::unique_ptr<task> read();	

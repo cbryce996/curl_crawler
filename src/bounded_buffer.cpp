@@ -1,8 +1,8 @@
 #include "bounded_buffer.h"
 
-bounded_buffer::bounded_buffer() :
+bounded_buffer::bounded_buffer(std::size_t buffer_size) :
 	buffer_queue(),
-	buffer_semaphore(100)
+	buffer_semaphore(buffer_size)
 {
 }
 

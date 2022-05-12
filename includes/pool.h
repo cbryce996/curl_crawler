@@ -11,15 +11,16 @@
 class pool
 {
 private:
-	const int THREADS;
+	const int threads;
 	bool stopped;
-	std::queue<std::unique_ptr<task>> tasks_queue;
+	//std::queue<std::unique_ptr<task>> tasks_queue;
+	bounded_buffer tasks_queue;
 	std::mutex tasks_mutex;
 	std::vector<std::thread> threads_vector;
-	std::counting_semaphore<1> tasks_semaphore;
+	std::counting_semaphore<10> tasks_semaphore;
 
 public:
-	pool();
+	pool(std::size_t, std::size_t);
 	~pool();
 
 	void schedule_task(std::unique_ptr<task>);

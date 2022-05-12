@@ -1,11 +1,12 @@
 #include <iostream>
+#include <chrono>
 #include "pool.h"
 #include "test_task.h"
 
 int main()
 {
-	pool thread_pool;
-	thread_pool.pool::initialize_pool();
+	pool thread_pool(4, 10);
+	thread_pool.initialize_pool();	
 
 	for (int i = 0; i < 100; i++)
 	{
