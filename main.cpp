@@ -5,7 +5,7 @@
 
 int main()
 {
-	pool thread_pool(4, 10);
+	pool thread_pool(4, 20);
 	thread_pool.initialize_pool();	
 
 	for (int i = 0; i < 100; i++)
