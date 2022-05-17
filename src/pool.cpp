@@ -12,14 +12,11 @@ pool::~pool()
 {
 	stopped = true;
 	for (std::thread& t : threads_vector) t.join();
-	std::cout << "Threads killed" << std::endl;
 }
 
 void pool::schedule_task(std::unique_ptr<task> new_task)
 {
-	{
-		tasks_queue.push(std::move(new_task));
-	}
+	tasks_queue.push(std::move(new_task));
 	std::cout << "Task added to queue" << std::endl;
 }
 
@@ -32,9 +29,7 @@ void pool::initialize_pool()
 				while (!stopped)
 				{
 					std::unique_ptr<task> current_task;
-					{
-						current_task = std::move(tasks_queue.read());
-					}
+					current_task = std::move(tasks_queue.read());
 					current_task->run();	
 					std::cout << "Task executed" << std::endl;
 				}
